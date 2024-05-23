@@ -1,0 +1,33 @@
+def sum_ints(symbols_to_sum: list):
+    sum_symbols: int = 0
+    for i in range(len(symbols_to_sum)):
+        sum_symbols = sum_symbols + symbols_to_sum[i]
+    return sum_symbols
+
+
+def list_of_symbols(r: int):
+    units: list = []
+    while r != 0:
+        units.append(r % 10)
+        r = r // 10
+    return units
+
+
+N: int = 0
+while N == 0:
+    try:
+        N = int(input('Enter your integer: '))
+    except ValueError:
+        print('It\'s not an integer! Try again!', end=' ')
+        continue
+    if N == 0:
+        print('0')
+        break
+
+N = abs(N)
+symbols: list = list_of_symbols(N)
+N = sum(symbols)
+while N > 10:
+    symbols = list_of_symbols(N)
+    N = sum(symbols)
+print(N)
