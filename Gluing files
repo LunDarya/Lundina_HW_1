@@ -1,0 +1,12 @@
+lines = []
+try:
+    with open('input1.txt', 'r') as file1, open('input2.txt', 'r') as file2, open('output.txt', 'w') as file_output:
+        for line in file1:
+            lines.append(line.strip())
+        for line in file2:
+            lines.append(line.strip())
+        lines.sort()
+        for line in lines:
+            file_output.write(line)
+except FileNotFoundError:
+    print('Your file isn\' in the right place, try again!')
