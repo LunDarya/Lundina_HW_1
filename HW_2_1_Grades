@@ -1,0 +1,21 @@
+grades = []
+try:
+    with open('input.txt', 'r') as input_file, open('output.txt', 'w') as output_file:
+        for line in input_file:
+            line_elements = line.strip().split(',')
+            grades.extend(line_elements)
+        av: int = 0
+        for i in range(0, int(len(grades)), 2):
+            try:
+                av = av+int(grades[i+1])
+            except ValueError:
+                print('Your file isn\'t correct, try again!')
+                break
+        av = av*2/int(len(grades))
+        for i in range(0, int(len(grades)), 2):
+            if int(grades[i+1]) > av:
+                output_file.write(str(grades[i]) +', ' + grades[i+1] + '\n')
+except FileNotFoundError:
+    print("Your file isn't on the right place, try again!")
+
+
