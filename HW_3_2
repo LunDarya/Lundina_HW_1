@@ -1,0 +1,28 @@
+import json
+import sys
+
+
+def read_dict_from_file(filename):
+    with open('input.txt', 'r') as file:
+        try:
+            data = json.load(file)
+
+        except json.decoder.JSONDecodeError:
+            print('Smth wrong with your file!')
+            sys.exit()
+    return data
+
+
+groceries = read_dict_from_file('input.txt')
+final = {}
+for store, items in groceries.items():
+    for item, quantity in items.items():
+        if item in final:
+            final[item] += quantity
+        else:
+            final[item] = quantity
+with open('output.txt', 'w') as f:
+    for item, quantity in final.items():
+        f.write(f"{item}:{quantity}\n")
+
+
