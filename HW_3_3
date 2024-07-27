@@ -1,0 +1,35 @@
+import json
+import sys
+
+
+def read_dict_from_file(filename):
+    with open(filename, 'r') as f:
+        lines = f.readlines()
+        data = {}
+        for line in lines:
+            try:
+                key, value = line.strip().split(':')
+                data[key.strip()] = value.strip().replace(', ', ' ').replace(',', '').split(' ')
+            except ValueError:
+                print('Smth wrong with your file!')
+                break
+    return data
+
+
+students = read_dict_from_file('input.txt')
+courses = {}
+
+for person, subject in students.items():
+    for sub in subject:
+        if sub in courses:
+            courses[sub].append(person)
+        else:
+            courses[sub] = [person]
+
+try:
+    subject = input('Enter subject: ').strip()
+    print(courses[subject])
+except KeyError:
+    print('No students choose this subject, or you wrote it wrong')
+
+
