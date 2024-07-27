@@ -1,0 +1,26 @@
+def read_dict_from_file(filename):
+    with open(filename, 'r') as f:
+        lines = f.readlines()
+        data = {}
+        for line in lines:
+            try:
+                key, value = line.strip().split(':')
+                data[key] = value
+            except ValueError:
+                print('Smth wrong with your file!')
+                break
+    return data
+
+
+cities = read_dict_from_file('cities.txt')
+min_population = int(input('Enter minimum level of population: '))
+cities_max = {}
+
+for city, population in cities.items():
+    if int(population) > min_population:
+        cities_max[city] = population
+cities_max_sorted = dict(sorted(cities_max.items(), key=lambda x: x[0]))
+
+with open('filtered_cities.txt', 'w') as f:
+    for city, population in cities_max_sorted.items():
+        f.write(f"{city}:{population}\n")
