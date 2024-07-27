@@ -1,0 +1,11 @@
+def madrigot (n: int):
+    if n == 1:
+        return 1
+    elif n == 2:
+        return 2
+    else:
+        return madrigot(n-2) + madrigot(n-1)
+
+
+count = int(input('Enter number of stairs: '))
+print (madrigot(count))
