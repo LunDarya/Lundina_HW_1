@@ -1,0 +1,29 @@
+def is_balanced_recursive(s: str, index: int = 0, stack: list = None):
+    if stack is None:
+        stack = []
+
+    if index == len(s) and len(stack) == 0:
+        return True
+    elif index == len(s) and len(stack) != 0:
+        return False
+
+    char = s[index]
+    if char in "({<[":
+        stack.append(char)
+    elif char in ")}>]":
+        if len(stack) == 0:
+            return False
+        top = stack.pop()
+        if not ((top == '(' and char == ')') or
+                (top == '{' and char == '}') or
+                (top == '[' and char == ']')):
+            return False
+
+    return is_balanced_recursive(s, index + 1, stack)
+
+
+with open('input.txt', 'r') as f_in, open ('output.txt', 'w') as f_out:
+    lines = f_in.readlines()
+    for line in lines:
+        f_out.write(str(is_balanced_recursive(str(line)))+'\n')
+
