@@ -1,0 +1,246 @@
+import random
+class Animal:
+    def __init__(self, species, size, food_type, habitat, lifespan):
+        self.species = species
+        self.size = size
+        self.food_type = food_type
+        self.habitat = habitat
+        self.lifespan = lifespan
+        self.individuals = []
+
+    def add_individual(self, age, satiety, gender):
+        self.individuals.append({
+            "age": age,
+            "satiety": satiety,
+            "gender": gender
+        })
+
+    def reproduce(self, parent1, parent2):
+        if parent1["gender"] != parent2["gender"]:
+            if self.habitat == "water" and parent1["satiety"] > 50 and parent2["satiety"] > 50:
+                for i in range(10):
+                    self.add_individual(0, 23, random.choice(["male", "female"]))
+            elif self.habitat == "air" and parent1["satiety"] > 42 and parent2["satiety"] > 42 and parent1[
+                "age"] > 3 and parent2["age"] > 3:
+                for i in range(4):
+                    self.add_individual(0, 64, random.choice(["male", "female"]))
+            elif self.habitat == "land" and parent1["satiety"] > 20 and parent2["satiety"] > 20 and parent1[
+                "age"] > 5 and parent2["age"] > 5:
+                for i in range(2):
+                    self.add_individual(0, 73, random.choice(["male", "female"]))
+            else:
+                print("К сожалению, эти животные не готовы к родительству!")
+        else:
+            print("К сожалению, биология не позволяет этим животным размножаться, попробуйте усыновить!")
+
+    def age_individuals(self):
+        for ind in self.individuals:
+            ind["age"] += 1
+
+    def remove_old_individuals(self):
+        new_individuals = [ind for ind in self.individuals if ind["age"] < self.lifespan]
+        removed_count = len(self.individuals) - len(new_individuals)
+        self.individuals = new_individuals
+        return removed_count * self.size
+
+    def feed_herbivores(self, plant_food):
+        for ind in self.individuals:
+            if self.food_type == "plant" and plant_food > 0:
+                ind["satiety"] += 26
+                plant_food -= 1
+                if ind["satiety"] > 100:
+                    ind['satiety'] = 100
+            elif plant_food <=10:
+                print('Недостаточно растительной еды')
+        return plant_food
+
+    def feed_carnivores(self, ecosystem):
+        for ind in self.individuals:
+            if self.food_type != "plant":
+                if random.random() < 0.5:
+                    ind["satiety"] += 53
+                    ecosystem.remove_random_herbivore()
+                    if ind['satiety'] > 100:
+                        ind['satiety'] = 100
+                else:
+                    ind["satiety"] -= 16
+
+    def starve_individuals(self):
+        for ind in self.individuals:
+            if ind["satiety"] <= 10:
+                self.individuals.remove(ind)
+
+    def decrease_satiety(self):
+        for ind in self.individuals:
+            ind["satiety"] -= 9
+
+
+class Ecosystem:
+    def __init__(self):
+        self.animals = []
+        self.plant_food = 100
+
+    def add_animal(self, animal):
+        self.animals.append(animal)
+
+    def add_plant_food(self, amount):
+        self.plant_food += amount
+
+    def age_all_animals(self):
+        for animal in self.animals:
+            animal.age_individuals()
+
+    def remove_old_animals(self):
+        for animal in self.animals:
+            self.plant_food += animal.remove_old_individuals()
+
+    def feed_herbivores(self):
+        for animal in self.animals:
+            self.plant_food = animal.feed_herbivores(self.plant_food)
+
+    def feed_carnivores(self):
+        for animal in self.animals:
+            animal.feed_carnivores(self)
+
+    def starve_all_animals(self):
+        for animal in self.animals:
+            animal.starve_individuals()
+
+    def decrease_all_satiety(self):
+        for animal in self.animals:
+            animal.decrease_satiety()
+
+#итерация по времени
+    def advance_time(self):
+        self.age_all_animals()
+        self.remove_old_animals()
+        self.feed_herbivores()
+        self.feed_carnivores()
+        self.decrease_all_satiety()
+        self.starve_all_animals()
+
+#получить список видов, которые есть в экосистема
+    def get_animal_species(self):
+        return [animal.species for animal in self.animals]
+
+#получить список всех животных вида с их атрибутами
+    def get_animal_by_species(self, species):
+        for animal in self.animals:
+            if animal.species == species:
+                return animal
+        return None
+
+    def remove_random_herbivore(self):
+        herbivores = [animal for animal in self.animals if animal.food_type == "plant"]
+        if herbivores:
+            herbivore = random.choice(herbivores)
+            if herbivore.individuals:
+                herbivore.individuals.pop(0)
+                print(f"Хищник съел одно из {herbivore.species}.")
+
+
+# Изначально заданные виды животных
+animal_species = [
+    {"species": "Рыба", "size": 1, "food_type": "plant", "habitat": "water", "lifespan": 10},
+    {"species": "Орел", "size": 3, "food_type": "meat", "habitat": "air", "lifespan": 15},
+    {"species": "Слон", "size": 10, "food_type": "plant", "habitat": "land", "lifespan": 50},
+    {"species": "Акула", "size": 8, "food_type": "meat", "habitat": "water", "lifespan": 30},
+    {"species": "Попугай", "size": 2, "food_type": "plant", "habitat": "air", "lifespan": 20},
+    {"species": "Лев", "size": 7, "food_type": "meat", "habitat": "land", "lifespan": 25},
+    {"species": "Дельфин", "size": 6, "food_type": "meat", "habitat": "water", "lifespan": 40},
+    {"species": "Бабочка", "size": 0.1, "food_type": "plant", "habitat": "air", "lifespan": 1},
+    {"species": "Кролик", "size": 1, "food_type": "plant", "habitat": "land", "lifespan": 12},
+    {"species": "Крокодил", "size": 9, "food_type": "meat", "habitat": "water", "lifespan": 70},
+    {"species": "Пингвин", "size": 1, "food_type": "plant", "habitat": "air", "lifespan": 10},
+    {"species": "Жираф", "size": 6, "food_type": "plant", "habitat": "land", "lifespan": 35}
+]
+
+
+# Создание экосистемы и добавление новых животных
+def generate_initial_ecosystem(ecosystem, species_list, num_individuals_per_species):
+    for species_info in species_list:
+        animal = Animal(species_info['species'], species_info['size'], species_info['food_type'],
+                        species_info['habitat'], species_info['lifespan'])
+        for _ in range(num_individuals_per_species):
+            age = random.randint(0, species_info['lifespan'] - 1)
+            satiety = random.randint(10, 100)
+            gender = random.choice(["male", "female"])
+            animal.add_individual(age, satiety, gender)
+        ecosystem.add_animal(animal)
+
+
+ecosystem = Ecosystem()
+generate_initial_ecosystem(ecosystem, animal_species, 10)
+
+
+def add_new_individual():
+    print("Выберите вид животного для добавления:")
+    for i, species in enumerate(ecosystem.get_animal_species()):
+        print(f"{i + 1}. {species}")
+
+    choice = int(input("Введите номер вида: ")) - 1
+    if 0 <= choice < len(ecosystem.get_animal_species()):
+        selected_species = ecosystem.get_animal_species()[choice]
+        print(selected_species)
+        age = int(input("Введите возраст животного: "))
+        satiety = int(input("Введите уровень сытости животного: "))
+        gender = input("Введите пол животного (male/female): ")
+        while gender!= 'male' and gender!= 'female':
+            gender = input("Введите пол животного (male/female): ")
+        animal = ecosystem.get_animal_by_species(selected_species)
+        if animal:
+            animal.add_individual(age, satiety, gender)
+            print(f"Добавлена особь вида {selected_species}.")
+        else:
+            print("Вид не найден.")
+    else:
+        print("Некорректный выбор.")
+
+
+def main():
+    while True:
+        print("\n1. Добавить новую особь")
+        print("2. Увеличить запас растительной пищи")
+        print("3. Просмотреть характеристики каждой особи")
+        print("4. Смоделировать процесс размножения")
+        print("5. Моделировать движение времени")
+        print("6. Выход")
+
+        choice = int(input("Введите ваш выбор: "))
+
+        if choice == 1:
+            add_new_individual()
+        elif choice == 2:
+            amount = int(input("Введите количество растительной пищи для добавления: "))
+            ecosystem.add_plant_food(amount)
+            print(f"Добавлено {amount} единиц растительной пищи.")
+        elif choice == 3:
+            for animal in ecosystem.animals:
+                print(f"\nВид: {animal.species}")
+                for ind in animal.individuals:
+                    print(f"Возраст: {ind['age']}, Сытость: {ind['satiety']}, Пол: {ind['gender']}")
+        elif choice == 4:
+            species = input("Введите вид животных для размножения: ")
+            animal = ecosystem.get_animal_by_species(species)
+            if animal and len(animal.individuals) >= 2:
+                parent1_idx = int(input("Введите индекс первой особи для размножения: "))
+                parent2_idx = int(input("Введите индекс второй особи для размножения: "))
+                if 0 <= parent1_idx < len(animal.individuals) and 0 <= parent2_idx < len(animal.individuals):
+                    parent1 = animal.individuals[parent1_idx]
+                    parent2 = animal.individuals[parent2_idx]
+                    animal.reproduce(parent1, parent2)
+                    print(f"Процесс размножения для вида {species} завершен.")
+                else:
+                    print("Некорректные индексы особей.")
+            else:
+                print("Вид не найден или недостаточно особей для размножения.")
+        elif choice == 5:
+            ecosystem.advance_time()
+            print("Время продвинуто на один шаг.")
+        elif choice == 6:
+            break
+        else:
+            print("Некорректный выбор. Попробуйте снова.")
+
+
+main()
